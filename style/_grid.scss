@@ -1,0 +1,23 @@
+@for $e from 1 through $grid-size-max-width {
+  .w-#{$e} {
+	width: $e * $grid-size;
+  }
+  .x-#{$e - 1} {
+	left: ($e - 1) * $grid-size;
+  }
+}
+@for $e from 1 through $grid-size-max-height {
+  .h-#{$e} {
+	height: $e * $grid-size;
+  }
+  .y-#{$e - 1} {
+	top: ($e - 1) * $grid-size;
+  }
+}
+
+@each $name, $sizes in $grid-boundaries {
+  .canvas-#{$name} {
+	width: nth($sizes, 1) * $grid-size;
+	height: nth($sizes, 2) * $grid-size;
+  }
+}

@@ -1,0 +1,242 @@
+.ikarus {
+  position: relative;
+  &.canvas {
+	table {
+	  padding: 0.25rem;
+	  -webkit-border-radius: 0.15rem;
+	  -moz-border-radius: 0.15rem;
+	  border-radius: 0.15rem;
+	  border: 1px solid darken(white, 10%);
+	  background-color: white;
+	  td {
+		padding-left: 0.25rem;
+		text-align: right;
+	  }
+	}
+
+	background-color: #ffd379;
+	padding: 0;
+	border: 1px solid black;
+	&.with-grid {
+	  background-size: 16px 16px, 16px 16px;
+	  background-repeat: repeat, repeat;
+	}
+
+	& .brick-cover {
+	  background-color: rgba(0,0,0,0.9);
+	  z-index: 1000;
+	  width: 110%;
+	  height: 110%;
+	  position: absolute;
+	  top:-5%;
+	  left:-5%;
+	}
+
+	.brick {
+	  position: absolute;
+	  fill: lighten(black, 25%);
+	  stroke: black;
+
+	  & .btn {
+		@include brick-btn;
+	  }
+
+	  em {
+		font-size: 80%;
+		line-height: 80%;
+	  }
+
+	  &[data-panel] {
+		&:hover {
+		  margin-top: -1px;
+		  margin-left: -1px;
+		  box-sizing: content-box;
+		  border: 1px dotted gray;
+		}
+	  }
+
+	  & .d-status-on {
+		display: none;
+	  }
+	  & .d-status-off {
+		display: none;
+	  }
+	  & .d-status-err {
+		display: none;
+	  }
+
+	  &.status-off {
+		fill: none !important;
+		stroke: black !important;
+		.brick {
+		  fill: none !important;
+		  stroke: black !important;
+		}
+		.brick-cover {
+		  display: none !important;
+		}
+		& .d-status-off {
+		  display: block;
+		}
+	  }
+	  &.status-on {
+		fill: lighten(green, 40%) !important;
+		stroke: lighten(green, 10%) !important;
+		.brick {
+		  fill: lighten(green, 40%) !important;
+		  stroke: lighten(green, 10%) !important;
+		}
+		.brick-cover {
+		  display: none !important;
+		}
+		& .d-status-on {
+		  display: block;
+		}
+	  }
+	  &.status-err {
+		fill: lighten(red, 30%) !important;
+		stroke: red !important;
+		& .brick {
+		  fill: lighten(red, 30%) !important;
+		  stroke: red !important;
+		}
+		.brick-cover {
+		  display: none !important;
+		}
+		& .d-status-err {
+		  display: block;
+		}
+	  }
+	  &[id].status-hand, &.status-hand [id].brick {
+		background-color: #f4d5ff;
+		margin-top: -1px;
+		margin-left: -1px;
+		box-sizing: content-box;
+		border: 1px solid #db00ff;
+	  }
+	  &.r-90 {
+		@include prefixes(transform, rotate(90deg));
+		&.flip-h {
+		  @include prefixes(transform, scale(-1, 1) rotate(90deg));
+		}
+		&.flip-v {
+		  @include prefixes(transform, scale(1, -1) rotate(90deg));
+		}
+	  }
+	  &.r-180 {
+		@include prefixes(transform, rotate(180deg));
+		&.flip-h {
+		  @include prefixes(transform, scale(-1, 1) rotate(180deg));
+		}
+		&.flip-v {
+		  @include prefixes(transform, scale(1, -1) rotate(180deg));
+		}
+	  }
+	  &.r-270 {
+		@include prefixes(transform, rotate(270deg));
+		&.flip-h {
+		  @include prefixes(transform, scale(-1, 1) rotate(270deg));
+		}
+		&.flip-v {
+		  @include prefixes(transform, scale(1, -1) rotate(270deg));
+		}
+	  }
+	  &.flip-h {
+		@include prefixes(transform, scale(-1, 1));
+	  }
+	  &.flip-v {
+		@include prefixes(transform, scale(1, -1));
+	  }
+
+	  &.sensor {
+		&.status-off {
+		  fill: #FF0 !important;
+		}
+		&.status-on {
+		  fill: #0F0 !important;
+		}
+		&.inversed {
+		  &.status-off {
+			fill: #0F0 !important;
+		  }
+		  &.status-on {
+			fill: #FF0 !important;
+		  }
+		}
+		&.status-err {
+		  fill: #F00 !important;
+		}
+	  }
+	}
+  }
+
+  & .brick-context-template {
+	display: none;
+  }
+
+  & .value-editable {
+	border: 1px dotted transparent;
+	padding-left: 0.2rem;
+	padding-right: 0.2rem;
+	display: inline-block;
+	cursor: pointer;
+	cursor: hand;
+
+	&.active {
+	  border-color: gray;
+	  cursor: context-menu;
+
+	  &.sending {
+		border-color: #0096FF;
+	  }
+	  &.success {
+		border-color: #00FF00;
+	  }
+	  &.error {
+		border-color: #FF0000;
+	  }
+	}
+  }
+
+  &.console {
+	background: #CCC;
+	border: 1px solid black;
+	& .report {
+	  height: $grid-size;
+	  width: 100%;
+	  border-bottom: 1px solid gray;
+	  font-size: 75%;
+	  vertical-align: middle;
+	  & .code {
+		font-style: italic;
+		display: inline-block;
+		width: $grid-size * 1.5;
+		text-align: right;
+		color: #969696;
+	  }
+	  & .date {
+		font-style: italic;
+		display: inline-block;
+		width: $grid-size * 9;
+	  }
+
+	  & .brick-name {
+		font-weight: bold;
+		display: inline-block;
+		width: $grid-size * 6;
+	  }
+
+	  & button {
+		height: $grid-size;
+		width: $grid-size * 4;
+		position: absolute;
+		right: 0;
+		font-size: 70%;
+	  }
+	}
+
+	.report-template {
+	  display: none;
+	}
+  }
+}

@@ -1,0 +1,27 @@
+$grid-size: 16px;
+
+$grid-size-max-width: 60;
+$grid-size-max-height: 45;
+
+$grid-boundaries: (
+        'small': (12, 9),
+        'medium': (24, 18),
+        'normal': (32, 24),
+        'large': (40, 30),
+        'x-large': (48, 36),
+        'xx-large': (60, 45)
+);
+
+$prefixes : (
+  '-webkit-',
+  '-moz-',
+  '-ms-',
+  '-o-'
+);
+
+@mixin prefixes ($property, $value) {
+  @each $pfx in $prefixes {
+    #{$pfx}#{$property}: $value;
+  }
+  #{$property}: $value;
+}

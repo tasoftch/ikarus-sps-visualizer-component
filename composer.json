@@ -1,0 +1,19 @@
+{
+  "name": "tasoft/phpstorm-template-js",
+  "minimum-stability": "dev",
+  "license": "BSD-3-Clause",
+  "authors": [
+    {
+      "name": "Thomas Abplanalp",
+      "email": "info@tasoft.ch"
+    }
+  ],
+  "require-dev": {
+    "skyline/direct-components": "^0.8"
+  },
+  "scripts": {
+    "post-create-project-cmd": [
+      "npm i"
+    ]
+  }
+}
