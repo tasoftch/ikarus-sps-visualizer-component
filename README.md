@@ -22,9 +22,17 @@ You can define a Skyline Template like:
 ?>
 <div class="content">
     <div class="ikarus console w-60 h-3" id="ikarus-console"></div>
-    <div class="ikarus canvas w-60 h-45" id="ikarus-canvas"></div>
+    <div class="ikarus canvas w-60 h-45" id="ikarus-canvas">...</div>
     <script type="application/javascript">
-        const VISUALIZER = new Ikarus.Visualizer
+        const VISUALIZER = new Ikarus.Visualizer(new Ikarus.APICommunication('/api/v1/my-sps-server', 'domain1 domain2'), 250, 'my-id');
+    
+        VISUALIZER.use(new Ikarus.BrickStatusHandlerPlugin());
+        VISUALIZER.use(new Ikarus.BrickMasterStatusPlugin());
+        VISUALIZER.use(new Ikarus.ValueEditionPlugin());
+        VISUALIZER.use(new Ikarus.BrickPanelPlugin());
+        VISUALIZER.use (new Ikarus.ConsolePlugin(document.getElementById('ikarus-console')));
+
+        VISUALIZER.updateFromCommunication(true);
     </script>
 </div>
 `````
