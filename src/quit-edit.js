@@ -24,6 +24,14 @@ export class QuitEdit {
 
         this.visualizer = visualizer ? visualizer : Visualizer.mainVisualizer;
 
+        const reset = ()=>{
+            this.$element.removeClass("editing");
+            let writer = QuitEdit.editableTagWriters[ this.$element[0].tagName.toLowerCase() ];
+            if(!writer)
+                writer = QuitEdit.editableTagWriters.def;
+            writer.call(element, this.oldValue, false);
+        };
+
         this.$element.on("dblclick touch", () => {
             this.$element.addClass("editing");
 
@@ -34,7 +42,7 @@ export class QuitEdit {
 
             let type = this.$element.attr("data-editable");
             type = type ? type: 'text';
-            this.$element.html("<input type='"+type+"' class='form-control p-0 px-1' value='"+this.oldValue+"'>");
+            this.$element.html("<input type='"+type+"' value='"+this.oldValue+"'>");
             this.$element.find("input").focus();
         })
             .on("change", ()=>{
@@ -57,6 +65,8 @@ export class QuitEdit {
                     window.setTimeout(() => { this.$element.removeClass("success"); }, QuitEdit.EDITOR_CHANGE_INTERVAL);
                     if(data !== undefined)
                         writer.call(element, data, true);
+                    else
+                        writer.call(element, "", false);
                 };
 
                 if(!key) {
@@ -65,11 +75,21 @@ export class QuitEdit {
                 }
                 else {
                     this.$element.addClass("sending");
+                    let multi = this.$element.attr("data-emultiplyer");
+                    if(multi > 1)
+                        text *= multi;
                     this.visualizer.sendValue(text, key, success, error);
                 }
 
                 this.$element.blur();
             })
+            .on('focusout', ()=>{
+                reset();
+            }).on("keyup", (e)=>{
+               if((e.which||e.keyCode) === 27) {
+                   reset();
+               }
+        })
         ;
     }
 }

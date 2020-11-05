@@ -29,7 +29,10 @@ const $ = window.jQuery;
 
 let _visualizer;
 const _formatters = {
-    'null': ()=>{return '-.-'}
+    'null': ()=>{return '-.-'},
+    'time_s': (s)=>{ return s + "s"; },
+    "time_min": (v)=> { return window.Skyline.String.format("%d:%02d", Math.floor(v/60), v%60); },
+    "time_h": (v)=> { v=Math.floor(v/60); return window.Skyline.String.format("%d:%02d", Math.floor(v/60), v%60); }
 };
 
 export class Visualizer extends Context {
@@ -158,6 +161,7 @@ export class Visualizer extends Context {
                 formatter = _formatters[ formatter ];
                 if(typeof formatter === 'function')
                     return formatter(value, element);
+                return value;
             }
 
             let m = $(element).attr("data-multiplyer") * 1;
@@ -228,7 +232,7 @@ export class Visualizer extends Context {
         if (!this.trigger('callprocedure', name, args)) return;
         var fd = new FormData();
         fd.append("name", name);
-        if(info)
+        if(args)
             fd.append('arguments', JSON.stringify( args ));
 
         this.communication.post('cproc', fd)
