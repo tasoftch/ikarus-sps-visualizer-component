@@ -76,6 +76,18 @@ $danger-color: #ff0000;
 		display: none;
 	  }
 
+		& .d-status-panel {
+			display: none;
+		}
+
+		& .d-status-res-1 {
+			display: none;
+		}
+
+		& .d-status-res-2 {
+			display: none;
+		}
+
 	  &.status-off {
 		fill: none !important;
 		stroke: black !important;
@@ -93,6 +105,7 @@ $danger-color: #ff0000;
 			  display: none;
 		  }
 	  }
+
 	  &.status-on {
 		fill: lighten(green, 40%) !important;
 		stroke: lighten(green, 10%) !important;
@@ -110,6 +123,34 @@ $danger-color: #ff0000;
 			  display: none;
 		  }
 	  }
+
+		&.status-panel {
+			& .d-status-panel {
+				display: block;
+			}
+			& .d-status-none {
+				display: none;
+			}
+		}
+
+		&.status-res-1 {
+			& .d-status-res-1 {
+				display: block;
+			}
+			& .d-status-none {
+				display: none;
+			}
+		}
+
+		&.status-res-2 {
+			& .d-status-res-2 {
+				display: block;
+			}
+			& .d-status-none {
+				display: none;
+			}
+		}
+
 	  &.status-err {
 		fill: lighten(red, 30%) !important;
 		stroke: red !important;
