@@ -22,7 +22,7 @@
 
 import {Visualizer} from './visualizer'
 import {QuitEdit} from "./quit-edit";
-import {APICommunication, Communication} from "./communication";
+import {APICommunication, Communication, CommunicationInstance, WebSocketCommunication} from "./communication";
 import {BrickStatusHandlerPlugin} from "./plugin/brick-status-handler-plugin";
 import {BrickMasterStatusPlugin} from "./plugin/brick-master-status-plugin";
 import {Plugin} from "./plugin/plugin";
@@ -38,6 +38,8 @@ import {ConsolePlugin} from "./plugin/console";
         QuitEdit,
         Communication,
         APICommunication,
+        WebSocketCommunication,
+        CommunicationInstance,
         Plugin,
         BrickStatusHandlerPlugin,
         BrickMasterStatusPlugin,

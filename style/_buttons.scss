@@ -1,0 +1,28 @@
+@import "vendor/twbs/bootstrap/scss/mixins";
+
+.ikarus {
+  &.canvas {
+    .brick {
+      & p[data-visible] {
+        display: none;
+      }
+
+      & p.visible[data-visible] {
+        display: block;
+      }
+
+      @each $color, $value in $theme-colors {
+        & .btn:not(.visible).#{$color} {
+          background-color: transparent;
+          @include button-outline-variant($value);
+        }
+      }
+
+      @each $color, $value in $theme-colors {
+        & .btn.visible.#{$color}[data-visible] {
+          @include button-variant($value, $value);
+        }
+      }
+    }
+  }
+}

@@ -1,7 +1,7 @@
 $grid-size: 16px;
 
-$grid-size-max-width: 60;
-$grid-size-max-height: 45;
+$grid-size-max-width: 80;
+$grid-size-max-height: 60;
 
 $grid-boundaries: (
         'small': (12, 9),
@@ -9,7 +9,8 @@ $grid-boundaries: (
         'normal': (32, 24),
         'large': (40, 30),
         'x-large': (48, 36),
-        'xx-large': (60, 45)
+        'xx-large': (60, 45),
+        "xxx-large": (80, 60)
 );
 
 $prefixes : (

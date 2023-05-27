@@ -1,3 +1,8 @@
+
+$success-color: #008000;
+$warning-color: #ffac00;
+$danger-color: #ff0000;
+
 .ikarus {
   position: relative;
   &.canvas {
@@ -13,6 +18,8 @@
 		text-align: right;
 	  }
 	}
+
+
 
 	background-color: #ffd379;
 	padding: 0;
@@ -55,6 +62,10 @@
 		}
 	  }
 
+
+	& .d-status-none {
+		display: block;
+	}
 	  & .d-status-on {
 		display: none;
 	  }
@@ -78,6 +89,9 @@
 		& .d-status-off {
 		  display: block;
 		}
+		  & .d-status-none {
+			  display: none;
+		  }
 	  }
 	  &.status-on {
 		fill: lighten(green, 40%) !important;
@@ -92,6 +106,9 @@
 		& .d-status-on {
 		  display: block;
 		}
+		  & .d-status-none {
+			  display: none;
+		  }
 	  }
 	  &.status-err {
 		fill: lighten(red, 30%) !important;
@@ -106,6 +123,9 @@
 		& .d-status-err {
 		  display: block;
 		}
+		  & .d-status-none {
+			  display: none;
+		  }
 	  }
 	  &[id].status-hand, &.status-hand [id].brick {
 		background-color: #f4d5ff;
@@ -149,21 +169,21 @@
 	  }
 
 	  &.sensor {
-		&.status-off {
+		&.status-off, &.status-off .brick {
 		  fill: #FF0 !important;
 		}
-		&.status-on {
+		&.status-on, &.status-on .brick {
 		  fill: #0F0 !important;
 		}
 		&.inversed {
-		  &.status-off {
+		  &.status-off, &.status-off .brick {
 			fill: #0F0 !important;
 		  }
-		  &.status-on {
+		  &.status-on, &.status-on .brick {
 			fill: #FF0 !important;
 		  }
 		}
-		&.status-err {
+		&.status-err, &.status-err .brick {
 		  fill: #F00 !important;
 		}
 	  }
@@ -239,4 +259,27 @@
 	  display: none;
 	}
   }
+
+	&.status-bar {
+		background: #eeeeee;
+		border: 1px solid black;
+		border-top: none;
+		padding: 0 0.5rem;
+
+		&.success {
+			background: #beffbe;
+			border-color: $success-color;
+		}
+
+		&.warning {
+			background: lighten($warning-color, 45%);
+			border-color: $warning-color;
+		}
+
+		&.danger {
+			background: lighten($danger-color, 45%);
+			border-color: $danger-color;
+		}
+	}
 }
+

@@ -3,6 +3,8 @@ import { Events } from './core/events'
 export class VisualEvents extends Events {
     constructor() {
         super({
+            fetch: [],
+
             beforeupdate: [],
             afterupdate: [],
 
@@ -22,7 +24,15 @@ export class VisualEvents extends Events {
             sentvalue:[],
 
             callprocedure: [],
-            procedurecalled: []
+            procedurecalled: [],
+
+            callworkflow:[],
+            workflowcalled:[],
+
+            openpanel:[],
+            panelopened:[],
+            closepanel:[],
+            panelclosed:[]
         });
     }
 }

@@ -1,6 +1,6 @@
 {
   "name": "ikarus-visualizer",
-  "version": "0.8.15",
+  "version": "0.8.117",
   "description": "",
   "scripts": {
     "v:patch": "npm version --no-git-tag-version patch",
@@ -17,7 +17,7 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "jqueryui": "^1.11",
-    "node-sass": "^4.8.3",
+    "node-sass": "^7.0",
     "webpack": "^4.44.2",
     "webpack-cli": "^3.3.12"
   }

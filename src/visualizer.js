@@ -23,6 +23,7 @@
 import {Context} from "./core/context";
 import {VisualEvents} from "./events";
 import {Alert} from "./alert";
+import {APIData} from "./APIData";
 
 
 const $ = window.jQuery;
@@ -37,13 +38,17 @@ const _formatters = {
 
 export class Visualizer extends Context {
     static get CONTROL_MANUAL_ON() { return 'on'; }
-    static get CONTROL_MANUAL_OFF() { return 'on'; }
-    static get CONTROL_MANUAL_AUTO() { return 'on'; }
+    static get CONTROL_MANUAL_OFF() { return 'off'; }
+    static get CONTROL_MANUAL_AUTO() { return 'auto'; }
 
     static get STATUS_OFF() { return 1; }
     static get STATUS_ON() { return 2; }
     static get STATUS_ERROR() { return 4; }
-    static get STATUS_HAND() { return 8; }
+    static get STATUS_HAND_OFF() { return 8; }
+    static get STATUS_HAND_ON() { return 16; }
+    static get STATUS_PANEL() { return 32; }
+    static get STATUS_RESERVED_1() { return 64; }
+    static get STATUS_RESERVED_2() { return 128; }
 
 
     static get mainVisualizer() { return _visualizer; }
@@ -61,7 +66,9 @@ export class Visualizer extends Context {
         _visualizer = this;
         this.alertMap = new Map();
         this.communication = communication;
+        communication.visualizer = this;
 
+        this.errorReschedule = updateInterval * 4;
         if(schedule)
             this.updateFromCommunication(true);
     }
@@ -70,15 +77,20 @@ export class Visualizer extends Context {
         if(!this.communication)
             throw new Error("Ikarus visualizer requires a communication instance.");
 
-        let fd = new FormData();
+        let fd = new APIData();
         this.communication.post('fetch', fd)
             .success((data) => {
-                this.updateFromJSON(data.response);
+                this.trigger('fetch', data);
+                if(data.response)
+                    this.updateFromJSON(data.response);
+
                 if(reschedule)
                     window.setTimeout(()=>this.updateFromCommunication(true), this.interval);
             })
             .error((err) => {
-                this.trigger('error', err)
+                this.trigger('error', err);
+                if(this.errorReschedule && reschedule)
+                    window.setTimeout(()=>this.updateFromCommunication(true), this.errorReschedule);
             })
     }
 
@@ -88,44 +100,56 @@ export class Visualizer extends Context {
         if(!$)
             throw new Error("Ikarus visualizer requires jQuery component.");
 
-        if(response.alerts && response.alerts.length > 0) {
-            const alertIDs = [];
+        if(response.alerts) {
+            if(Object.keys(response.alerts).length > 0) {
+                const alertIDs = [];
 
-            for(const idx in response.alerts) {
-                const a = response.alerts[idx];
-                if(a.uid) {
-                    alertIDs.push(a.uid);
+                for(const idx in response.alerts) {
+                    const a = response.alerts[idx];
+                    if(a.uid) {
+                        alertIDs.push(a.uid);
 
-                    if(!this.alertMap.has(a.uid)) {
-                        const al = new Alert(a);
-                        this.alertMap.set(a.uid, al);
-                        this.trigger('createalert', al);
+                        if(!this.alertMap.has(a.uid)) {
+                            const al = new Alert(a);
+                            this.alertMap.set(a.uid, al);
+                            this.trigger('createalert', al);
+                        }
                     }
                 }
-            }
 
-            this.alertMap.forEach(a=>{
-                const i = alertIDs.indexOf(a.uid);
-                if(i === -1) {
+                this.alertMap.forEach(a=>{
+                    const i = alertIDs.indexOf(a.uid);
+                    if(i === -1) {
+                        this.trigger('removealert', a);
+                        this.alertMap.delete(a.uid);
+                    }
+                });
+            } else {
+                this.alertMap.forEach(a=>{
                     this.trigger('removealert', a);
                     this.alertMap.delete(a.uid);
-                }
-            });
-        } else {
-            this.alertMap.forEach(a=>{
-                this.trigger('removealert', a);
-                this.alertMap.delete(a.uid);
-            });
+                });
+            }
         }
 
         for(const anID in response) {
             if(response.hasOwnProperty(anID)) {
-                const $obj = $("#"+anID);
+                let info = response[anID];
+
+                if(anID.substr(0, 1) === '@') {
+                    // Is command
+                    if(info === '1')
+                        $("[data-visible='"+anID.substr(1)+"']").addClass("visible");
+                    else
+                        $("[data-visible='"+anID.substr(1)+"']").removeClass("visible");
+                    continue;
+                }
+
+                const $obj = $("#"+anID.replace(/\./ig, '--'));
                 if($obj.length < 1 || $obj.hasClass("editing")) {
                     continue;
                 }
 
-                let info = response[anID];
                 if(info !== undefined) {
                     if(typeof info === "string" || typeof info === "number") {
                         info = this.formatValue(info, $obj.attr("data-formatter"), $obj[0]);
@@ -151,7 +175,7 @@ export class Visualizer extends Context {
             }
         }
 
-        this.trigger('afterupdate');
+        this.trigger('afterupdate', response);
     }
 
     formatValue(value, formatter, element) {
@@ -177,7 +201,7 @@ export class Visualizer extends Context {
     sendControl(control, brick_id) {
         if (!this.trigger('sendcontrol', control, brick_id)) return;
 
-        var fd = new FormData();
+        var fd = new APIData();
 
         fd.append("type", control);
         fd.append('key', brick_id);
@@ -194,7 +218,7 @@ export class Visualizer extends Context {
     sendCommand(command, args) {
         if (!this.trigger('sendcommand', command, args)) return;
 
-        var fd = new FormData();
+        var fd = new APIData();
 
         fd.append("cmd", command);
         fd.append('info', JSON.stringify( args ? args : []));
@@ -210,16 +234,23 @@ export class Visualizer extends Context {
 
     sendValue(value, id, success, failed) {
         if (!this.trigger('sendvalue', value, id)) return;
-        var fd = new FormData();
+        var fd = new APIData();
 
         fd.append("value", value);
-        fd.append('key', id);
+
+        let [dom, key] = id.split("--", 2);
+        if(typeof key !== 'string' || key.length<1) {
+            key = dom;
+            dom = this.communication.domain.split(" ", 2)[0];
+        }
+        fd.append('key', key);
+        fd.append('domain', dom);
 
         this.communication.post('putv', fd)
             .success((data)=> {
-                this.trigger('sentvalue', data);
+                this.trigger('sentvalue', data ? data.value : value);
                 if(success)
-                    success(data.value);
+                    success(data ? data.value : value);
             })
             .error((data) => {
                 this.trigger('error', data);
@@ -230,7 +261,7 @@ export class Visualizer extends Context {
 
     callProcedure(name, args) {
         if (!this.trigger('callprocedure', name, args)) return;
-        var fd = new FormData();
+        var fd = new APIData();
         fd.append("name", name);
         if(args)
             fd.append('arguments', JSON.stringify( args ));
@@ -244,16 +275,59 @@ export class Visualizer extends Context {
             });
     }
 
+    callWorkflow(name) {
+        if (!this.trigger('callworkflow', name)) return;
+        var fd = new APIData();
+        fd.append("name", name);
+        this.communication.post('cwfl', fd)
+            .success((data)=> {
+                this.trigger('workflowcalled', data);
+            })
+            .error((data) => {
+                this.trigger('error', data);
+            });
+    }
+
     quitAlert(id) {
-        var fd = new FormData();
+        var fd = new APIData();
         fd.append('key', id);
 
-        this.communication.post('quit', fd)
+        this.communication.post('alrtq', fd)
             .success((data)=> {
                 this.trigger('quitalert', data);
                 const al = this.alertMap.get(id instanceof Alert ? id.uid : id);
                 if(typeof al.quitCallback === 'function')
                     al.quitCallback.call(al, data);
+            })
+            .error((data) => {
+                this.trigger('error', data);
+            });
+    }
+
+    openPanel(brick_id) {
+        this.trigger('openpanel', brick_id)
+
+        var fd = new APIData();
+        fd.append('brick', brick_id);
+
+        this.communication.post('po', fd)
+            .success((data)=> {
+                this.trigger('panelopened', data);
+            })
+            .error((data) => {
+                this.trigger('error', data);
+            });
+    }
+
+    closePanel(brick_id) {
+        this.trigger('closepanel', brick_id)
+
+        var fd = new APIData();
+        fd.append('brick', brick_id);
+
+        this.communication.post('co', fd)
+            .success((data)=> {
+                this.trigger('panelclosed', data);
             })
             .error((data) => {
                 this.trigger('error', data);

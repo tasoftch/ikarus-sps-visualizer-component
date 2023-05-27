@@ -1,0 +1,12 @@
+
+@import "vendor/twbs/bootstrap/scss/functions";
+@import "vendor/twbs/bootstrap/scss/variables";
+
+@each $color, $value in $theme-colors {
+  .fill-#{$color} {
+    fill: #{$value};
+  }
+  .stroke-#{$color} {
+    stroke: #{$value};
+  }
+}

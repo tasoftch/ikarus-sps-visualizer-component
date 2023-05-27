@@ -76,7 +76,7 @@ export class QuitEdit {
                 else {
                     this.$element.addClass("sending");
                     let multi = this.$element.attr("data-emultiplyer");
-                    if(multi > 1)
+                    if(multi)
                         text *= multi;
                     this.visualizer.sendValue(text, key, success, error);
                 }

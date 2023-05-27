@@ -9,7 +9,8 @@
     }
   ],
   "require-dev": {
-    "skyline/direct-components": "^0.8"
+    "skyline/direct-components": "^0.8",
+    "twbs/bootstrap": "^4.5"
   },
   "scripts": {
     "post-create-project-cmd": [

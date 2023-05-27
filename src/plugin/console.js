@@ -72,9 +72,11 @@ export class ConsolePlugin extends Plugin {
 
 
         div.className = "report";
-        if(alert.level === 0)
+        console.log(alert.level);
+
+        if(alert.level === 1)
             div.classList.add('alert-secondary');
-        else if(alert.level === 1)
+        else if(alert.level === 2)
             div.classList.add('alert-warning');
         else
             div.classList.add('alert-danger');
@@ -84,6 +86,8 @@ export class ConsolePlugin extends Plugin {
     }
 
     removeAlert(alert) {
+        console.log("REMOVE "+alert.uid);
+
         const view = this.alertViewMap.get(alert.uid);
         if(view)
             this.container.removeChild(view);
